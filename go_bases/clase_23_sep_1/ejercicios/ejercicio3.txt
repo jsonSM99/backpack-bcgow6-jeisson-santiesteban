@@ -1,0 +1,7 @@
+  var 1nombre string // nombre no puede iniciar con numero
+  var apellido string // bien
+  var int edad // tipo de dato despues del nombre
+  1apellido := 6 // nombre no puede iniciar con numero
+  var licencia_de_conducir = true // bien
+  var estatura de la persona int // nombre no puede contener espacios
+  cantidadDeHijos := 2 // bien
