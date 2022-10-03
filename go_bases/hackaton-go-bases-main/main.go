@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	var tickets []*service.Ticket
+	var tickets []service.Ticket
 	var err error
 
 	fileService := file.File{
-		Path: "./tickets.csv",
+		Path: "tickets.csv",
 	}
 
 	tickets, err = fileService.Read()
@@ -21,10 +21,9 @@ func main() {
 		fmt.Println(err)
 	}
 	// Funcion para obtener tickets del archivo csv
-	fmt.Print(tickets)
 	bookings := service.NewBookings(tickets)
 
-	bookings.Create(&service.Ticket{
+	bookings.Create(service.Ticket{
 		Id:          1001,
 		Names:       "jeisson",
 		Email:       "jeisson@gmail.com",
@@ -32,9 +31,10 @@ func main() {
 		Date:        "01/01/1999",
 		Price:       1,
 	})
-	fileService.Write(tickets)
 
-	bookings.Update(1001, &service.Ticket{
+	fileService.Write(bookings.GetTickets())
+
+	bookings.Update(1001, service.Ticket{
 		Id:          1001,
 		Names:       "jeisson",
 		Email:       "jeisson2@gmail.com",
@@ -42,16 +42,13 @@ func main() {
 		Date:        "01/01/1999",
 		Price:       1,
 	})
-	fileService.Write(tickets)
+	fileService.Write(bookings.GetTickets())
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _, x := range tickets {
-		fmt.Println(*x)
-	}
 
-	bookings.Delete(1001)
-	fileService.Write(tickets)
+	// bookings.Delete(1001)
+	// fileService.Write(tickets)
 
 }

@@ -2,9 +2,11 @@ package file
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"io/fs"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/bootcamp-go/hackaton-go-bases/internal/service"
@@ -29,7 +31,7 @@ func openFile(path string, flag int, perm fs.FileMode) (document *os.File, err e
 	return
 }
 
-func (f *File) Read() (tickets []*service.Ticket, err error) {
+func (f *File) Read() (tickets []service.Ticket, err error) {
 
 	var document *os.File
 	document, err = openFile(f.Path, os.O_RDONLY, 0755)
@@ -63,7 +65,7 @@ func (f *File) Read() (tickets []*service.Ticket, err error) {
 				Date:        fields[i+4],
 				Price:       Price,
 			}
-			tickets = append(tickets, &ticket)
+			tickets = append(tickets, ticket)
 		}
 	}
 
@@ -83,32 +85,39 @@ func appendToFile(file *os.File, ticket service.Ticket) (err error) {
 	return
 }
 
-func writeLines(file string, lines []string) (err error) {
-	f, err := os.Create(file)
+func writeLines(file string, tickets []service.Ticket) (err error) {
+
+	return
+}
+
+func ticketsToLines(tickets []service.Ticket) (lines [][]string) {
+
+	return
+}
+func (f *File) Write(tickets []service.Ticket) error {
+
+	file, err := os.Create(f.Path)
+	defer file.Close()
+
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	w := bufio.NewWriter(f)
-	defer w.Flush()
-	for _, line := range lines {
-		_, err := w.WriteString(line)
-		if err != nil {
-			return err
+
+	csvwriter := csv.NewWriter(file)
+	defer csvwriter.Flush()
+
+	for _, ticket := range tickets {
+		record := []string{
+			strconv.Itoa(ticket.Id),
+			ticket.Names,
+			ticket.Email,
+			ticket.Destination,
+			ticket.Date,
+			strconv.Itoa(ticket.Price)}
+
+		if err = csvwriter.Write(record); err != nil {
+			fmt.Println(err)
 		}
 	}
-	return nil
-}
-
-func ticketsToLines(tickets []*service.Ticket) (lines []string) {
-	for _, ticket := range tickets {
-		lines = append(lines, fmt.Sprintf("%d,%s,%s,%s,%s,%d\n", ticket.Id, ticket.Names, ticket.Email, ticket.Destination, ticket.Date, ticket.Price))
-	}
-	return
-}
-func (f *File) Write(tickets []*service.Ticket) (err error) {
-
-	err = writeLines(f.Path, ticketsToLines(tickets))
-
-	return
+	return err
 }
