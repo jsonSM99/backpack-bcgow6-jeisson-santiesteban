@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -25,10 +26,14 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
-	err := godotenv.Load()
+	path, err := os.Getwd()
+	if err != nil {
+		log.Fatal("xd")
+	}
+	err = godotenv.Load(filepath.Join(path, "cmd/server/.env"))
 
 	if err != nil {
-		log.Fatal("error al intentar cargar el archivo .env")
+		log.Fatal(err.Error())
 	}
 	db := store.New(store.FileType, "./transacciones.json")
 	repo := transactions.NewRepository(db)
